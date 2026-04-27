@@ -57,15 +57,9 @@ Then press `i` for iOS simulator, `a` for Android, or scan the QR with Expo Go o
 
 The full design handoff lives in `Fitness app idea Brainstorm/design_handoff_levl/` outside this repo. It contains the HTML prototype and the README with all screens, design tokens, copy, and animations.
 
-### Live Prototype Preview
+### Screen Overview
 
-![LeVl prototype splash screen](./assets/preview/prototype.png)
-
-Browse the original interactive HTML prototype here:
-
-[LeVl App prototype (preview)](https://bf54c4d6-50c3-43df-8aa7-31a39b503e0d.claudeusercontent.com/v1/design/projects/bf54c4d6-50c3-43df-8aa7-31a39b503e0d/serve/LeVl%20App-print.html?t=0dcd5b4db9dc7a2730c2e01e46465557ab61912c22126ae48e642068bb4b6b8a.7b40fadc-85a2-4890-a6b1-81ae6051405e.fca5f651-c263-4ff7-9b5c-8583f1a48123.1777235051)
-
-> Note: this preview link is signed and may expire or rotate. The local copy at `Fitness app idea Brainstorm/design_handoff_levl/LeVl App.html` is the canonical source.
+![LeVl screen overview: Onboarding, Daily Quests, Workout, Hunter Profile](./assets/preview/prototype.png)
 
 ## Roadmap
 
@@ -80,6 +74,10 @@ Browse the original interactive HTML prototype here:
 - [ ] Paywall bottom sheet
 - [ ] AsyncStorage persistence for quests, XP, and onboarding flag
 - [ ] RevenueCat integration for the real subscription flow
+
+## Credits
+
+Built by **Sam Dameg** ([@SammyCode002](https://github.com/SammyCode002)) and **Rykuna**.
 
 ## License
 
