@@ -77,7 +77,7 @@ The full design handoff lives in `Fitness app idea Brainstorm/design_handoff_lev
 
 ## Credits
 
-Built by **Sam** ([@SammyCode002](https://github.com/SammyCode002)) and **Rykuna** ([@Rykuna-bit](https://github.com/Rykuna-bit)).
+Built by **Sam** ([@SammyCode002](https://github.com/SammyCode002)) and **Ryan** ([@Rykuna-bit](https://github.com/Rykuna-bit)).
 
 ## License
 
