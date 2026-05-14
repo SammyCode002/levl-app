@@ -1,6 +1,6 @@
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
 import { Text } from 'react-native'
-import { HomeScreen, PlaceholderScreen } from '../screens'
+import { HomeScreen, PlaceholderScreen, ProfileScreen } from '../screens'
 import { colors, fonts } from '../theme'
 
 const Tab = createBottomTabNavigator()
@@ -49,9 +49,7 @@ export function BottomTabs() {
       <Tab.Screen name="Meals">
         {() => <PlaceholderScreen title="Meals" emoji="🍽️" />}
       </Tab.Screen>
-      <Tab.Screen name="Profile">
-        {() => <PlaceholderScreen title="Profile" emoji="👤" />}
-      </Tab.Screen>
+      <Tab.Screen name="Profile" component={ProfileScreen} />
     </Tab.Navigator>
   )
 }

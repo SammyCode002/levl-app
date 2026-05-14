@@ -20,12 +20,20 @@ import {
 import { OnboardingSplashScreen, OnboardingTypeScreen } from './src/screens'
 import { BottomTabs } from './src/navigation/BottomTabs'
 import { colors } from './src/theme'
+import { defaultProfile, usePersistedState, type HunterProfile } from './src/storage'
 
-type OnboardStep = 'splash' | 'type' | 'done'
+type OnboardStep = 'splash' | 'type'
 
 export default function App() {
   const [step, setStep] = useState<OnboardStep>('splash')
-  const [, setWorkoutType] = useState<'weights' | 'bodyweight' | 'hybrid' | null>(null)
+  const [onboarded, setOnboarded, onboardedHydrated] = usePersistedState<boolean>(
+    'onboarded',
+    false,
+  )
+  const [, setProfile, profileHydrated] = usePersistedState<HunterProfile>(
+    'profile',
+    defaultProfile,
+  )
 
   const [fontsLoaded] = useOrbitron({
     Orbitron_400Regular,
@@ -39,7 +47,9 @@ export default function App() {
     Exo2_700Bold,
   })
 
-  if (!fontsLoaded) {
+  const ready = fontsLoaded && onboardedHydrated && profileHydrated
+
+  if (!ready) {
     return (
       <View style={styles.loading}>
         <ActivityIndicator color={colors.blue} />
@@ -50,16 +60,18 @@ export default function App() {
   return (
     <SafeAreaProvider>
       <StatusBar style="light" />
-      {step === 'splash' && <OnboardingSplashScreen onContinue={() => setStep('type')} />}
-      {step === 'type' && (
+      {!onboarded && step === 'splash' && (
+        <OnboardingSplashScreen onContinue={() => setStep('type')} />
+      )}
+      {!onboarded && step === 'type' && (
         <OnboardingTypeScreen
           onConfirm={(type) => {
-            setWorkoutType(type)
-            setStep('done')
+            setProfile((prev) => ({ ...prev, workoutType: type }))
+            setOnboarded(true)
           }}
         />
       )}
-      {step === 'done' && (
+      {onboarded && (
         <NavigationContainer>
           <BottomTabs />
         </NavigationContainer>

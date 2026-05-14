@@ -1,7 +1,7 @@
-import { useState } from 'react'
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { RankBadge, SystemWindow, XpBar } from '../components'
+import { usePersistedState } from '../storage'
 import { colors, fonts, radius, spacing, type } from '../theme'
 
 interface Quest {
@@ -9,30 +9,33 @@ interface Quest {
   label: string
   muscle: string
   xp: number
-  done: boolean
 }
 
-const initialQuests: Quest[] = [
-  { id: '1', label: 'Bench Press 4x8', muscle: 'Chest', xp: 120, done: false },
-  { id: '2', label: 'Incline Dumbbell Press 3x10', muscle: 'Chest', xp: 100, done: false },
-  { id: '3', label: 'Push-ups 3x15', muscle: 'Chest', xp: 60, done: false },
-  { id: '4', label: 'Cable Fly 3x12', muscle: 'Chest', xp: 80, done: false },
-  { id: '5', label: '10 min Warmup Jog', muscle: 'Cardio', xp: 50, done: false },
+const QUESTS: Quest[] = [
+  { id: '1', label: 'Bench Press 4x8', muscle: 'Chest', xp: 120 },
+  { id: '2', label: 'Incline Dumbbell Press 3x10', muscle: 'Chest', xp: 100 },
+  { id: '3', label: 'Push-ups 3x15', muscle: 'Chest', xp: 60 },
+  { id: '4', label: 'Cable Fly 3x12', muscle: 'Chest', xp: 80 },
+  { id: '5', label: '10 min Warmup Jog', muscle: 'Cardio', xp: 50 },
 ]
 
 const MAX_XP = 1000
+const XP_BASELINE = 340
 
 /**
  * Home / Daily Quests screen.
  * Tap quests to toggle complete. XP totals roll up the bar.
  */
 export function HomeScreen() {
-  const [quests, setQuests] = useState(initialQuests)
-  const xp = quests.filter((q) => q.done).reduce((sum, q) => sum + q.xp, 340)
-  const completedCount = quests.filter((q) => q.done).length
+  const [doneIds, setDoneIds] = usePersistedState<string[]>('quests:done', [])
+  const doneSet = new Set(doneIds)
+  const xp = QUESTS.reduce((sum, q) => sum + (doneSet.has(q.id) ? q.xp : 0), XP_BASELINE)
+  const completedCount = doneIds.length
 
   function toggle(id: string) {
-    setQuests((prev) => prev.map((q) => (q.id === id ? { ...q, done: !q.done } : q)))
+    setDoneIds((prev) =>
+      prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id],
+    )
   }
 
   return (
@@ -68,46 +71,49 @@ export function HomeScreen() {
 
         <View style={styles.questHeader}>
           <Text style={[type.sectionLabel, { color: colors.blue }]}>DAILY QUESTS</Text>
-          <Text style={[type.sectionLabel, { color: completedCount === quests.length ? colors.green : colors.textMuted }]}>
-            {completedCount} / {quests.length}
+          <Text style={[type.sectionLabel, { color: completedCount === QUESTS.length ? colors.green : colors.textMuted }]}>
+            {completedCount} / {QUESTS.length}
           </Text>
         </View>
 
         <View style={{ gap: 8 }}>
-          {quests.map((q) => (
-            <Pressable
-              key={q.id}
-              onPress={() => toggle(q.id)}
-              style={[
-                styles.quest,
-                q.done && { backgroundColor: '#00ff880d', borderColor: colors.green },
-              ]}
-            >
-              <View
+          {QUESTS.map((q) => {
+            const done = doneSet.has(q.id)
+            return (
+              <Pressable
+                key={q.id}
+                onPress={() => toggle(q.id)}
                 style={[
-                  styles.checkbox,
-                  q.done && { backgroundColor: colors.green, borderColor: colors.green },
+                  styles.quest,
+                  done && { backgroundColor: '#00ff880d', borderColor: colors.green },
                 ]}
               >
-                {q.done && <Text style={styles.checkMark}>✓</Text>}
-              </View>
-              <View style={{ flex: 1 }}>
-                <Text
+                <View
                   style={[
-                    type.bodyBold,
-                    {
-                      color: colors.text,
-                      textDecorationLine: q.done ? 'line-through' : 'none',
-                    },
+                    styles.checkbox,
+                    done && { backgroundColor: colors.green, borderColor: colors.green },
                   ]}
                 >
-                  {q.label}
-                </Text>
-                <Text style={[type.small, { color: colors.textMuted, marginTop: 2 }]}>{q.muscle}</Text>
-              </View>
-              <Text style={[styles.xpReward]}>+{q.xp} XP</Text>
-            </Pressable>
-          ))}
+                  {done && <Text style={styles.checkMark}>✓</Text>}
+                </View>
+                <View style={{ flex: 1 }}>
+                  <Text
+                    style={[
+                      type.bodyBold,
+                      {
+                        color: colors.text,
+                        textDecorationLine: done ? 'line-through' : 'none',
+                      },
+                    ]}
+                  >
+                    {q.label}
+                  </Text>
+                  <Text style={[type.small, { color: colors.textMuted, marginTop: 2 }]}>{q.muscle}</Text>
+                </View>
+                <Text style={[styles.xpReward]}>+{q.xp} XP</Text>
+              </Pressable>
+            )
+          })}
         </View>
 
         <View style={styles.statsRow}>
